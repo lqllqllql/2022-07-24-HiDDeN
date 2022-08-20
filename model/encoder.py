@@ -16,11 +16,11 @@ class Encoder(nn.Module):
         self.num_blocks = config.encoder_blocks
 
         layers = [ConvBNRelu(3, self.conv_channels)]
-
+        # num of encoder blocks
         for _ in range(config.encoder_blocks-1):
             layer = ConvBNRelu(self.conv_channels, self.conv_channels)
             layers.append(layer)
-
+       
         self.conv_layers = nn.Sequential(*layers)
         self.after_concat_layer = ConvBNRelu(self.conv_channels + 3 + config.message_length,
                                              self.conv_channels)
@@ -35,8 +35,9 @@ class Encoder(nn.Module):
         expanded_message.unsqueeze_(-1)
 
         expanded_message = expanded_message.expand(-1,-1, self.H, self.W)
+        # 对覆盖图像进行预处理
         encoded_image = self.conv_layers(image)
-        # concatenate expanded message and image
+        # concatenate expanded message and image：残差连接
         concat = torch.cat([expanded_message, encoded_image, image], dim=1)
         im_w = self.after_concat_layer(concat)
         im_w = self.final_layer(im_w)
