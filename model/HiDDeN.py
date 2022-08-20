@@ -32,14 +32,16 @@ class Hidden:
 
         self.config = configuration
         self.device = device
-
+        # 损失函数
         self.bce_with_logits_loss = nn.BCEWithLogitsLoss().to(device)
         self.mse_loss = nn.MSELoss().to(device)
-
+        
+        # 自定义覆盖图像和隐藏图像的标签值
         # Defined the labels used for training the discriminator/adversarial loss
         self.cover_label = 1
         self.encoded_label = 0
-
+        
+        # 画图
         self.tb_logger = tb_logger
         if tb_logger is not None:
             from tensorboard_logger import TensorBoardLogger
@@ -60,6 +62,7 @@ class Hidden:
         images, messages = batch
 
         batch_size = images.shape[0]
+        # 开始训练
         self.encoder_decoder.train()
         self.discriminator.train()
         with torch.enable_grad():
