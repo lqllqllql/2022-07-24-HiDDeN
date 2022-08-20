@@ -1,6 +1,8 @@
 class TrainingOptions:
     """
     Configuration options for the training
+    训练配置选项：相当于定义对象里面的一些方法
+    此代码包含断点信息保存和断点训练方法
     """
 
     def __init__(self,
@@ -20,6 +22,7 @@ class TrainingOptions:
 class HiDDenConfiguration():
     """
     The HiDDeN network configuration.
+    HiDDeN模型配置选项
     """
 
     def __init__(self, H: int, W: int, message_length: int,
