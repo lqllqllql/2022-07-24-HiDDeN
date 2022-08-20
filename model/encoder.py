@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from options import HiDDenConfiguration
-from model.conv_bn_relu import ConvBNRelu
+from options import HiDDenConfiguration# 导入配置的对象方法
+from model.conv_bn_relu import ConvBNRelu# 导入一个网络块：一个卷积层，一个BN层，一个relu层
 
 
 class Encoder(nn.Module):
