@@ -69,19 +69,18 @@ class Hidden:
             # ---------------- Train the discriminator -----------------------------
             self.optimizer_discrim.zero_grad()
             # train on cover
-            d_target_label_cover = torch.full((batch_size, 1), self.cover_label, device=self.device)
-            d_target_label_encoded = torch.full((batch_size, 1), self.encoded_label, device=self.device)
-            g_target_label_encoded = torch.full((batch_size, 1), self.cover_label, device=self.device)
+            d_target_label_cover = torch.full((batch_size, 1), self.cover_label, device=self.device) # 标签值1
+            d_target_label_encoded = torch.full((batch_size, 1), self.encoded_label, device=self.device) # 生成标签值0
+            g_target_label_encoded = torch.full((batch_size, 1), self.cover_label, device=self.device) # 目标：将生成的隐写图像识别为1
 
-            d_on_cover = self.discriminator(images)
-            d_loss_on_cover = self.bce_with_logits_loss(d_on_cover, d_target_label_cover)
+            d_on_cover = self.discriminator(images) #图像输入判别器
+            d_loss_on_cover = self.bce_with_logits_loss(d_on_cover, d_target_label_cover) # 损失函数
             d_loss_on_cover.backward()
 
             # train on fake
-            encoded_images, noised_images, decoded_messages = self.encoder_decoder(images, messages)
-            d_on_encoded = self.discriminator(encoded_images.detach())
+            encoded_images, noised_images, decoded_messages = self.encoder_decoder(images, messages) # 假数据，及隐写图像
+            d_on_encoded = self.discriminator(encoded_images.detach()) # 判别
             d_loss_on_encoded = self.bce_with_logits_loss(d_on_encoded, d_target_label_encoded)
-
             d_loss_on_encoded.backward()
             self.optimizer_discrim.step()
 
@@ -105,10 +104,10 @@ class Hidden:
             g_loss.backward()
             self.optimizer_enc_dec.step()
 
-        decoded_rounded = decoded_messages.detach().cpu().numpy().round().clip(0, 1)
+        decoded_rounded = decoded_messages.detach().cpu().numpy().round().clip(0, 1) # 将解码的二进制信息限制在
         bitwise_avg_err = np.sum(np.abs(decoded_rounded - messages.detach().cpu().numpy())) / (
-                batch_size * messages.shape[1])
-
+                batch_size * messages.shape[1])# 位精度
+        # 评价体系
         losses = {
             'loss           ': g_loss.item(),
             'encoder_mse    ': g_loss_enc.item(),
