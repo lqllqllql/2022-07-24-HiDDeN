@@ -48,6 +48,7 @@ def train(model: Hidden,
         step = 1
         for image, _ in train_data:
             image = image.to(device)
+            # 随机生成二进制信息
             message = torch.Tensor(np.random.choice([0, 1], (image.shape[0], hidden_config.message_length))).to(device)
             losses, _ = model.train_on_batch([image, message])
 
